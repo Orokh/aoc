@@ -38,8 +38,6 @@ def buildStacks(stacks: List[String], nbStacks: Int): List[Stack[Char]]=
             result(i).push(elt)
         }
 
-  println()
-
   result.map(s => s.reverse)
 
 def applyMove(stacks: List[Stack[Char]], move: String): Unit =
