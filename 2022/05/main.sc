@@ -1,5 +1,4 @@
 import scala.util.matching.Regex
-import scala.collection.mutable.Stack
 import scala.io.{BufferedSource, Source}
 import util.control.Breaks._
 
@@ -22,44 +21,38 @@ def splitInputData(rawData: List[String]): (List[String], Int, List[String]) =
 
   (stacks.dropRight(1), nbStacks, moves)
 
-def buildStacks(stacks: List[String], nbStacks: Int): List[Stack[Char]]=
-  val result: List[Stack[Char]] = List.fill(nbStacks)(Stack())
+def parseRow(row: String) =
+  for i <- 0 to row.length by 4 yield
+    if row(i+1) != ' ' then
+      row(i+1)
+    else
+      ('_')
 
-  for (stack <- stacks)
-  do
-      for (i <- 0 to nbStacks - 1)
-      do
-      breakable {
-          val tgt = (1 + i * 4)
-          if (tgt >= stack.length) break
-
-          val elt = stack(tgt)
-          if (elt != ' ')
-            result(i).push(elt)
-        }
-
-  result.map(s => s.reverse)
-
-def applyMove(stacks: List[Stack[Char]], move: String): Unit =
-  val movePattern: Regex = "move ([0-9]+) from ([0-9]+) to ([0-9]+)".r
-
-  move match
-    case movePattern(nb, src, tgt) =>
-      for (i <- 1 to nb.toInt)
-      do
-        stacks(tgt.toInt - 1).push(stacks(src.toInt - 1).pop)
+def buildStacks(stacks: List[String], nbStacks: Int): List[List[Char]]=
+  val cleanedInput = stacks.map(parseRow(_))
+  cleanedInput.transpose
 
 
-def getResult(stacks: List[Stack[Char]]): String =
-  stacks.map(m => m.pop).mkString
+//def applyMove(stacks: List[List[Char]], move: String): Unit =
+//  val movePattern: Regex = "move ([0-9]+) from ([0-9]+) to ([0-9]+)".r
+//
+//  move match
+//    case movePattern(nb, src, tgt) =>
+//      for (i <- 1 to nb.toInt)
+//      do
+//        stacks(tgt.toInt - 1).push(stacks(src.toInt - 1).pop)
+
+//def getResult(stacks: List[List[Char]]): String =
+//  stacks.map(_.pop).mkString
 
 @main def process(): Unit =
-  val data = readInput("input.txt")
+  val data = readInput("test.txt")
 
   val (stacksDef, nbStacks, moves) = splitInputData(data)
   val stacks = buildStacks(stacksDef, nbStacks)
+  println(stacks)
 
-  moves.foreach(m => applyMove(stacks, m))
+ // moves.foreach(m => applyMove(stacks, m))
 
-  println(getResult(stacks))
+ // println(getResult(stacks))
 
