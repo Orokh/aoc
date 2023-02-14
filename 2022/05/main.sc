@@ -37,27 +37,27 @@ def buildStacks(stacks: List[String], nbStacks: Int): List[List[Char]]=
   cleanedInput.transpose.map(_.filter(_ != '_'))
 
 
-def applyMove(stacks: List[List[Char]], move: String): List[List[Char]] =
+def applyMove(stacks: List[List[Char]], move: String, moveMethod: (List[Char], List[Char])=>List[Char]): List[List[Char]] =
   val movePattern: Regex = "move ([0-9]+) from ([0-9]+) to ([0-9]+)".r
 
   move match
     case movePattern(nb, src, tgt) =>
       val (moved, newSource) = stacks(src.toInt - 1).splitAt(nb.toInt)
-      val newTarget = moved.reverse:::stacks(tgt.toInt - 1)
+      val newTarget = moveMethod(moved, stacks(tgt.toInt - 1))
 
       stacks.updated(src.toInt - 1, newSource).updated(tgt.toInt - 1, newTarget)
 
 
-def processMoves(stacks: List[List[Char]], moves: List[String]): List[List[Char]] =
+def processMoves(stacks: List[List[Char]], moves: List[String], moveMethod: (List[Char], List[Char])=>List[Char]): List[List[Char]] =
 
-  @tailrec def processMovesRec(state: List[List[Char]], moves: List[String]) : List[List[Char]]=
+  @tailrec def processMovesRec(state: List[List[Char]], moves: List[String], moveMethod: (List[Char], List[Char])=>List[Char]) : List[List[Char]]=
     if moves.isEmpty then
       state
     else
-      val newState = applyMove(state, moves.head)
-      processMovesRec(newState, moves.tail)
+      val newState = applyMove(state, moves.head, moveMethod)
+      processMovesRec(newState, moves.tail, moveMethod)
 
-  processMovesRec(stacks, moves)
+  processMovesRec(stacks, moves, moveMethod)
 
 
 @main def process(): Unit =
@@ -66,5 +66,8 @@ def processMoves(stacks: List[List[Char]], moves: List[String]): List[List[Char]
   val (stacksDef, nbStacks, moves) = splitInputData(data)
   val stacks = buildStacks(stacksDef, nbStacks)
 
-  val result1 = processMoves(stacks, moves)
+  val result1 = processMoves(stacks, moves, _.reverse:::_)
   println(result1.map(_.head).mkString)
+
+  val result2 = processMoves(stacks, moves, _:::_)
+  println(result2.map(_.head).mkString)
