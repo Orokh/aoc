@@ -12,6 +12,7 @@ def readInput(file: String): List[String] =
 
   data.result()
 
+
 def splitInputData(rawData: List[String]): (List[String], Int, List[String]) =
   val idxEmptyLine = rawData.indexOf("")
   val (stacks, rest) = rawData.splitAt(idxEmptyLine)
@@ -21,6 +22,7 @@ def splitInputData(rawData: List[String]): (List[String], Int, List[String]) =
 
   (stacks.dropRight(1), nbStacks, moves)
 
+
 def parseRow(row: String, nbStacks: Int) =
   for i <- 0 to nbStacks - 1 yield
     val pos = (1 + i*4)
@@ -28,6 +30,7 @@ def parseRow(row: String, nbStacks: Int) =
       ('_')
     else
       row(pos)
+
 
 def buildStacks(stacks: List[String], nbStacks: Int): List[List[Char]]=
   val cleanedInput = stacks.map(parseRow(_, nbStacks))
@@ -44,6 +47,7 @@ def applyMove(stacks: List[List[Char]], move: String): List[List[Char]] =
 
       stacks.updated(src.toInt - 1, newSource).updated(tgt.toInt - 1, newTarget)
 
+
 def processMoves(stacks: List[List[Char]], moves: List[String]): List[List[Char]] =
 
   @tailrec def processMovesRec(state: List[List[Char]], moves: List[String]) : List[List[Char]]=
@@ -54,6 +58,7 @@ def processMoves(stacks: List[List[Char]], moves: List[String]): List[List[Char]
       processMovesRec(newState, moves.tail)
 
   processMovesRec(stacks, moves)
+
 
 @main def process(): Unit =
   val data = readInput("input.txt")
